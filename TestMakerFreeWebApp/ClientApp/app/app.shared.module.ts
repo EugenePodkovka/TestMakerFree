@@ -9,6 +9,9 @@ import { NavMenuComponent } from './components/navmenu/navmenu.component';
 import { HomeComponent } from './components/home/home.component';
 import { QuizListComponent } from './components/quiz/quiz-list.component';
 import { QuizComponent } from './components/quiz/quiz.component';
+import { AboutComponent } from './components/about/about.component';
+import { LoginComponent } from './components/login/login.component';
+import { PagenotfoundComponent } from './components/pagenotfound/pagenotfound.component';
 
 @NgModule({
     declarations: [
@@ -16,7 +19,10 @@ import { QuizComponent } from './components/quiz/quiz.component';
         NavMenuComponent,
         HomeComponent,
         QuizListComponent,
-        QuizComponent
+        QuizComponent,
+        AboutComponent,
+        LoginComponent,
+        PagenotfoundComponent
     ],
     imports: [
         CommonModule,
@@ -26,7 +32,9 @@ import { QuizComponent } from './components/quiz/quiz.component';
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'home', component: HomeComponent },
             { path: 'quiz/:id', component: QuizComponent },
-            { path: '**', redirectTo: 'home' }
+            { path: 'about', component: AboutComponent },
+            { path: 'login', component: LoginComponent },
+            { path: '**', component: PagenotfoundComponent }
         ])
     ]
 })
