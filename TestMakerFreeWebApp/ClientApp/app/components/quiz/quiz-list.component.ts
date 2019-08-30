@@ -36,6 +36,7 @@ export class QuizListComponent implements OnInit {
                 url += "Random/";
                 break;
         }
+        //async web service call with subscribtion on callback
         this.http.get<Quiz[]>(url).subscribe(result => {
             this.quizzes = result;
         }, error => console.log(error));
