@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace TestMakerFreeWebApp.Data
@@ -39,6 +40,10 @@ namespace TestMakerFreeWebApp.Data
 
         [Required]
         public DateTime LastModifiedDate { get; set; }
+        #endregion
+
+        #region Lazy-Load Properties
+        public virtual List<Quiz> Quizzes { get; set; }
         #endregion
     }
 }

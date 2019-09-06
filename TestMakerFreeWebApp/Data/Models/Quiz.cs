@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
 
 namespace TestMakerFreeWebApp.Data
 {
@@ -44,6 +46,15 @@ namespace TestMakerFreeWebApp.Data
 
         [Required]
         public DateTime LastModifiedDate { get; set; }
+        #endregion
+
+        #region Lazy-load Properties
+        [ForeignKey("UserId")]
+        public virtual ApplicationUser User { get; set; }
+        
+        public virtual List<Question> Questions { get; set; }
+
+        public virtual List<Result> Results { get; set; }
         #endregion
     }
 }

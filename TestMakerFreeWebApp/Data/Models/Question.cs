@@ -40,5 +40,12 @@ namespace TestMakerFreeWebApp.Data
         [Required]
         public DateTime LastModifiedDate { get; set; }
         #endregion
+
+        #region Lazy-Load Properties
+        [ForeignKey("QuizId")]
+        public virtual Quiz Quiz { get; set; }
+
+        public virtual List<Answer> Answers { get; set; }
+        #endregion
     }
 }
