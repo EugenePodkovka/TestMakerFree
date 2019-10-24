@@ -63,6 +63,13 @@ namespace TestMakerFreeWebApp
                     name: "spa-fallback",
                     defaults: new { controller = "Home", action = "Index" });
             });
+
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var dbContext = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
+                dbContext.Database.Migrate();
+                DbSeeder.Seed(dbContext);
+            }
         }
     }
 }
