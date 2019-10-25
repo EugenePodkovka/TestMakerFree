@@ -7,6 +7,7 @@ using TestMakerFreeWebApp.ViewModels;
 using Newtonsoft.Json;
 using TestMakerFreeWebApp.Data;
 using Mapster;
+using Microsoft.Azure.KeyVault.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -26,10 +27,19 @@ namespace TestMakerFreeWebApp.Controllers
         }
         #endregion
 
+        #region RESTful conventions methods
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
             var quiz = DbContext.Quizzes.Where(i => i.Id == id).FirstOrDefault();
+
+            if(quiz == null)
+            {
+                return NotFound(new
+                {
+                    Error = String.Format("Quiz Id = {0} has not been found", id)
+                });
+            }
 
             return new JsonResult(
                 quiz.Adapt<QuizViewModel>(),
@@ -38,6 +48,77 @@ namespace TestMakerFreeWebApp.Controllers
                     Formatting = Formatting.Indented
                 });
         }
+        [HttpPut]
+        public IActionResult Put([FromBody]QuizViewModel model)
+        {
+            if(model == null)
+            {
+                return new StatusCodeResult(500);
+            }
+            var quiz = model.Adapt<Quiz>();
+            quiz.CreatedDate = DateTime.Now;
+            quiz.LastModifiedDate = DateTime.Now;
+            quiz.UserId = DbContext.Users.Where(u => u.UserName == "Admin").FirstOrDefault().Id;
+
+            DbContext.Quizzes.Add(quiz);
+            DbContext.SaveChanges();
+
+            return new JsonResult(
+                quiz.Adapt<QuizViewModel>(),
+                new JsonSerializerSettings()
+                {
+                    Formatting = Formatting.Indented
+                });
+
+        }
+        [HttpPost]
+        public IActionResult Post([FromBody]QuizViewModel model)
+        {
+            if(model == null)
+            {
+                return new StatusCodeResult(500);
+            }
+            var quiz = DbContext.Quizzes.Where(q => q.Id == model.Id).FirstOrDefault();
+            if(quiz == null)
+            {
+                return NotFound(new
+                {
+                    Error = String.Format("Quiz with Id = {0} has not been found", model.Id)
+                });
+            }
+
+            quiz.Title = model.Title;
+            quiz.Description = model.Description;
+            quiz.Text = model.Text;
+            quiz.Notes = model.Notes;
+            quiz.LastModifiedDate = DateTime.Now;
+
+            DbContext.SaveChanges();
+
+            return new JsonResult(
+                quiz.Adapt<QuizViewModel>(),
+                new JsonSerializerSettings()
+                {
+                    Formatting = Formatting.Indented
+                });
+        }
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var quiz = DbContext.Quizzes.Where(q => q.Id == id).FirstOrDefault();
+            if(quiz == null)
+            {
+                return NotFound(new
+                {
+                    Error = String.Format("Quiz with Id = {0} has not been found", id)
+                });
+            }
+            DbContext.Quizzes.Remove(quiz);
+            DbContext.SaveChanges();
+
+            return new OkResult();
+        }
+        #endregion
 
         [HttpGet("Latest/{num:int?}")]
         public IActionResult Latest(int num = 10)
