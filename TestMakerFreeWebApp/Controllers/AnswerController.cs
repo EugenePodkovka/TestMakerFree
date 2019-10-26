@@ -5,85 +5,106 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using TestMakerFreeWebApp.ViewModels;
 using Newtonsoft.Json;
+using TestMakerFreeWebApp.Data;
+using Mapster;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace TestMakerFreeWebApp.Controllers
 {
     [Route("api/[controller]")]
-    public class AnswerController : Controller
+    public class AnswerController : BaseApiController
     {
-        [HttpGet("All/{questionId}")]
-        public IActionResult All(int questionId)
-        {
-            var sampleAnswers = new List<AnswerViewModel>();
-            sampleAnswers.Add(new AnswerViewModel()
-            {
-                Id = 1,
-                QuestionId = questionId,
-                Text = "Friends and family",
-                CreatedDate = DateTime.Now,
-                LastModifiedDate = DateTime.Now
-            });
-            for (int i = 2; i <= 5; i++)
-            {
-                sampleAnswers.Add(new AnswerViewModel()
-                {
-                    Id = i,
-                    QuestionId = questionId,
-                    Text = String.Format("Sample Answer {0}", i),
-                    CreatedDate = DateTime.Now,
-                    LastModifiedDate = DateTime.Now
-                });
-            }
-            return new JsonResult(
-                sampleAnswers,
-                new JsonSerializerSettings()
-                {
-                    Formatting = Formatting.Indented
-                });
-        }
+        #region Costructors
+        public AnswerController(ApplicationDbContext context) : base(context) { }
+        #endregion
 
         #region RESTful conventions methods
-        /// <summary>
-        /// Retrieves the Answer with the given {id}
-        /// </summary>
-        /// <param name="id">The ID of an existing Answer</param>
-        /// <returns>the Answer with the given {id}</returns>
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            return Content("Not implemented (yet)!");
+            var answer = DbContext.Answers.Where(a => a.Id == id).FirstOrDefault();
+            if(answer == null)
+            {
+                return NotFound(new
+                {
+                    Exception = String.Format("Answer with Id={0} has not been found.", id)
+                });
+            }
+            return new JsonResult(
+                answer.Adapt<AnswerViewModel>(),
+                JsonSettings);
         }
-
-        /// <summary>
-        /// Adds a new Answer to the Database
-        /// </summary>
-        /// <param name="model">The AnswerViewModel containing the data to insert</param>
         [HttpPut]
-        public IActionResult Put(AnswerViewModel model)
+        public IActionResult Put([FromBody]AnswerViewModel model)
         {
-            throw new NotImplementedException();
+            if(model == null)
+            {
+                return new StatusCodeResult(500);
+            }
+            var answer = model.Adapt<Answer>();
+            answer.CreatedDate = DateTime.Now;
+            answer.LastModifiedDate = DateTime.Now;
+            DbContext.Answers.Add(answer);
+            DbContext.SaveChanges();
+            return new JsonResult(
+                answer.Adapt<AnswerViewModel>(),
+                JsonSettings);
         }
-
-        /// <summary>
-        /// Edit the Answer with the given {id}
-        /// </summary>
-        /// <param name="model">The AnswerViewModel containing the data to update</param>
         [HttpPost]
-        public IActionResult Post(AnswerViewModel model)
+        public IActionResult Post([FromBody]AnswerViewModel model)
         {
-            throw new NotImplementedException();
-        }
+            if(model == null)
+            {
+                return new StatusCodeResult(500);
+            }
+            var answer = DbContext.Answers.Where(a => a.Id == model.Id).FirstOrDefault();
+            if(answer == null)
+            {
+                return NotFound(new
+                {
+                    Exception = String.Format("Answer with Id={0} has not been found.", model.Id)
+                });
+            }
+            answer.QuestionId = model.QuestionId;
+            answer.Text = model.Text;
+            answer.Value = model.Value;
+            answer.Notes = model.Notes;
+            answer.Type = model.Type;
+            answer.Flags = model.Flags;
+            answer.LastModifiedDate = model.LastModifiedDate == null ? DateTime.Now : model.LastModifiedDate;
 
-        /// <summary>
-        /// Deletes the Answer with the given {id} from the Database
-        /// </summary>
-        /// <param name="id">The ID of an existing Answer</param>
+            DbContext.SaveChanges();
+
+            return new JsonResult(
+                answer.Adapt<AnswerViewModel>(),
+                JsonSettings);
+        }
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            throw new NotImplementedException();
+            var answer = DbContext.Answers.Where(a => a.Id == id).FirstOrDefault();
+            if(answer == null)
+            {
+                return NotFound(new
+                {
+                    Exception = String.Format("Answer with Id={0} has not been found.", id)
+                });
+            }
+            DbContext.Answers.Remove(answer);
+            DbContext.SaveChanges();
+            return new OkResult();
+        }
+        #endregion
+
+        #region Public Methods
+        [HttpGet("All/{questionId}")]
+        public IActionResult All(int questionId)
+        {
+            var answers = DbContext.Answers.Where(a => a.QuestionId == questionId).ToArray();
+            return new JsonResult(
+                answers.Adapt<AnswerViewModel>(),
+                JsonSettings);
         }
         #endregion
     }

@@ -14,17 +14,10 @@ using Microsoft.Azure.KeyVault.Models;
 namespace TestMakerFreeWebApp.Controllers
 {
     [Route("api/[controller]")]
-    public class QuizController : Controller
+    public class QuizController : BaseApiController
     {
-        #region Private Fields
-        private ApplicationDbContext DbContext;
-        #endregion
-
         #region Constructor
-        public QuizController (ApplicationDbContext context)
-        {
-            DbContext = context;
-        }
+        public QuizController (ApplicationDbContext context) : base(context) { }
         #endregion
 
         #region RESTful conventions methods
@@ -43,10 +36,7 @@ namespace TestMakerFreeWebApp.Controllers
 
             return new JsonResult(
                 quiz.Adapt<QuizViewModel>(),
-                new JsonSerializerSettings()
-                {
-                    Formatting = Formatting.Indented
-                });
+                JsonSettings);
         }
         [HttpPut]
         public IActionResult Put([FromBody]QuizViewModel model)
@@ -65,10 +55,7 @@ namespace TestMakerFreeWebApp.Controllers
 
             return new JsonResult(
                 quiz.Adapt<QuizViewModel>(),
-                new JsonSerializerSettings()
-                {
-                    Formatting = Formatting.Indented
-                });
+                JsonSettings);
 
         }
         [HttpPost]
@@ -97,10 +84,7 @@ namespace TestMakerFreeWebApp.Controllers
 
             return new JsonResult(
                 quiz.Adapt<QuizViewModel>(),
-                new JsonSerializerSettings()
-                {
-                    Formatting = Formatting.Indented
-                });
+                JsonSettings);
         }
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
@@ -120,6 +104,7 @@ namespace TestMakerFreeWebApp.Controllers
         }
         #endregion
 
+        #region Publick methods
         [HttpGet("Latest/{num:int?}")]
         public IActionResult Latest(int num = 10)
         {
@@ -130,10 +115,7 @@ namespace TestMakerFreeWebApp.Controllers
 
             return new JsonResult(
                 latest.Adapt<QuizViewModel[]>(),
-                new JsonSerializerSettings()
-                {
-                    Formatting = Formatting.Indented
-                });
+                JsonSettings);
         }
 
         [HttpGet("ByTitle/{num:int?}")]
@@ -146,10 +128,7 @@ namespace TestMakerFreeWebApp.Controllers
 
             return new JsonResult(
                 sampleQuizzes.Adapt<QuizViewModel[]>(),
-                new JsonSerializerSettings()
-                {
-                    Formatting = Formatting.Indented
-                });
+                JsonSettings);
         }
 
         [HttpGet("Random/{num:int?}")]
@@ -162,10 +141,8 @@ namespace TestMakerFreeWebApp.Controllers
 
             return new JsonResult(
                 quizzes.Adapt<QuizViewModel[]>(),
-                new JsonSerializerSettings()
-                {
-                    Formatting = Formatting.Indented
-                });
+                JsonSettings);
         }
+        #endregion
     }
 }
