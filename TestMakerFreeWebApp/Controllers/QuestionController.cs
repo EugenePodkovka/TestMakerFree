@@ -104,7 +104,7 @@ namespace TestMakerFreeWebApp.Controllers
             var questions = DbContext.Questions.Where(q => q.QuizId == quizId).ToArray();
 
             return new JsonResult(
-                questions.Adapt<QuestionViewModel>(),
+                questions.Adapt<QuestionViewModel[]>(),
                 JsonSettings);
         }
 

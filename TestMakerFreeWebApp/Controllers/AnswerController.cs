@@ -103,7 +103,7 @@ namespace TestMakerFreeWebApp.Controllers
         {
             var answers = DbContext.Answers.Where(a => a.QuestionId == questionId).ToArray();
             return new JsonResult(
-                answers.Adapt<AnswerViewModel>(),
+                answers.Adapt<AnswerViewModel[]>(),
                 JsonSettings);
         }
         #endregion
