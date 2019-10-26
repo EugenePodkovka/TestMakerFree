@@ -1,8 +1,7 @@
 ﻿ul.quizzes li {
-    color: #000acb;
-    cursor: pointer;
+  color: #000acb;
+  cursor: pointer;
 }
-
-    ul.quizzes .selected {
-        background-color: #cccccc;
-    }
+ul.quizzes .selected {
+  background-color: #cccccc;
+}
