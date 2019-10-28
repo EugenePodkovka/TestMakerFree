@@ -16,6 +16,8 @@ export class QuizComponent {
         private http: HttpClient,
         @Inject('BASE_URL') private baseUrl: string) {
 
+        this.quiz = <Quiz>{};
+
         var id = +this.activateRoute.snapshot.params["id"];
         console.log(id);
         if (id) {
