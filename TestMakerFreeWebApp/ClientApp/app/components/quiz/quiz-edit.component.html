@@ -18,13 +18,20 @@
                 Title is a required field: please insert a valid title.
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group" [ngClass]="{ 'has-error has-feedback' : hasError('Description') }">
             <label for="description">Quiz description:</label>
             <br />
             <input type="text" id="description"
                    formControlName="Description" required
                    placeholder="enter a description..."
                    class="form-control" />
+            <span *ngIf="hasError('Description')"
+                  class="glyphicon glyphicon-remove form-control-feedback"
+                  aria-hidden="true"></span>
+            <div *ngIf="hasError('Description')"
+                 class="help-block">
+                Description is a required field: please insert a valid text.
+            </div>
         </div>
         <div class="form-group">
             <label for="text">Quiz informative text:</label>
