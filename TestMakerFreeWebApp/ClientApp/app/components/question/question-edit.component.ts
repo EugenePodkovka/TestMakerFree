@@ -14,6 +14,7 @@ export class QuestionEditComponent {
     question: Question | undefined;
     editMode: boolean | undefined;
     form: FormGroup;
+    activityLog: string;
 
     constructor(private activatedRoute: ActivatedRoute,
         private router: Router,
@@ -46,6 +47,31 @@ export class QuestionEditComponent {
         this.form = this.fb.group({
             Text: ['', Validators.required]
         });
+
+        this.activityLog = '';
+        this.log("Form has been initialized");
+
+        this.form.valueChanges.subscribe(val => {
+            if (this.form.dirty) {
+                this.log("Form was updated by the user");
+            }
+            else {
+                this.log("Form model has been loaded");
+            }
+        })
+        this.form.get("Text")!.valueChanges.subscribe(res => {
+            if (this.form.dirty) {
+                this.log("The Text form control was updated with initial value")
+            }
+            else {
+                this.log("The Text form control was updated by user");
+            }
+
+        })
+    }
+
+    log(str: string) {
+        this.activityLog += "[" + new Date().toLocaleString() + "] " + str + "<br/>";
     }
 
     updateForm() {
